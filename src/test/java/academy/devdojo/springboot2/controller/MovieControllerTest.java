@@ -29,6 +29,9 @@ class MovieControllerTest {
         PageImpl<Movie> moviePage = new PageImpl<>(List.of(MovieCreator.createValidMovie()));
         BDDMockito.when(movieServiceMock.findAll(ArgumentMatchers.any()))
                 .thenReturn(moviePage);
+
+        BDDMockito.when(movieServiceMock.findAllNonPageable())
+                .thenReturn(List.of(MovieCreator.createValidMovie()));
     }
 
     @Test
@@ -43,5 +46,20 @@ class MovieControllerTest {
         Assertions.assertEquals(moviePage.toList().size(), 1);
         Assertions.assertEquals(moviePage.toList().get(0).getName(), expectedName);
     }
+
+    @Test
+    @DisplayName("ListAll returns list of movies when successful")
+    void listAll_ReturnsListOfMovies_WhenSuccessful(){
+        String expectedName = MovieCreator.createValidMovie().getName();
+
+        List<Movie> movies = movieController.listAll().getBody();
+
+        Assertions.assertNotNull(movies);
+        Assertions.assertFalse(movies.isEmpty());
+        Assertions.assertEquals(movies.size(), 1);
+        Assertions.assertEquals(movies.get(0).getName(), expectedName);
+    }
+
+
 
 }
