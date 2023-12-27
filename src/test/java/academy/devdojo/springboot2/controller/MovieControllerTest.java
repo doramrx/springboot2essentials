@@ -32,10 +32,13 @@ class MovieControllerTest {
 
         BDDMockito.when(movieServiceMock.findAllNonPageable())
                 .thenReturn(List.of(MovieCreator.createValidMovie()));
+
+        BDDMockito.when(movieServiceMock.findByIdOrThrowBadRequestException(ArgumentMatchers.anyLong()))
+                .thenReturn(MovieCreator.createValidMovie());
     }
 
     @Test
-    @DisplayName("List returns list of movies inside page object when successful")
+    @DisplayName("list returns list of movies inside page object when successful")
     void list_ReturnsListOfMoviesInsidePageObject_WhenSuccessful(){
         String expectedName = MovieCreator.createValidMovie().getName();
 
@@ -48,7 +51,7 @@ class MovieControllerTest {
     }
 
     @Test
-    @DisplayName("ListAll returns list of movies when successful")
+    @DisplayName("listAll returns list of movies when successful")
     void listAll_ReturnsListOfMovies_WhenSuccessful(){
         String expectedName = MovieCreator.createValidMovie().getName();
 
@@ -60,6 +63,15 @@ class MovieControllerTest {
         Assertions.assertEquals(movies.get(0).getName(), expectedName);
     }
 
+    @Test
+    @DisplayName("findById returns movie when successful")
+    void findById_ReturnsMovie_WhenSuccessful(){
+        Long expectedId = MovieCreator.createValidMovie().getId();
 
+        Movie movie = movieController.findById(1).getBody();
+
+        Assertions.assertNotNull(movie);
+        Assertions.assertEquals(movie.getId(), expectedId);
+    }
 
 }
