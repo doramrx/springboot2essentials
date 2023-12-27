@@ -48,6 +48,8 @@ class MovieControllerTest {
         BDDMockito.when(movieServiceMock.save(ArgumentMatchers.any(MovieDTO.class)))
                 .thenReturn(MovieCreator.createValidMovie());
 
+        BDDMockito.doNothing().when(movieServiceMock).delete(ArgumentMatchers.anyLong());
+
         BDDMockito.doNothing().when(movieServiceMock).replace(ArgumentMatchers.any(MovieDTO.class));
     }
 
@@ -120,6 +122,15 @@ class MovieControllerTest {
 
         Assertions.assertNotNull(movie);
         Assertions.assertEquals(movie, MovieCreator.createValidMovie());
+    }
+
+    @Test
+    @DisplayName("delete removes movie when successful")
+    void delete_RemovesMovie_WhenSuccessful(){
+        Assertions.assertDoesNotThrow(() -> movieController.delete(1));
+        ResponseEntity<Void> entity = movieController.delete(1);
+        Assertions.assertNotNull(entity);
+        Assertions.assertEquals(HttpStatus.NO_CONTENT, entity.getStatusCode());
     }
 
     @Test
