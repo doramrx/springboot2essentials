@@ -1,8 +1,10 @@
 package academy.devdojo.springboot2.controller;
 
 import academy.devdojo.springboot2.domain.Movie;
+import academy.devdojo.springboot2.dto.MovieDTO;
 import academy.devdojo.springboot2.service.MovieService;
 import academy.devdojo.springboot2.util.MovieCreator;
+import academy.devdojo.springboot2.util.MovieDTOCreator;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
@@ -39,6 +41,9 @@ class MovieControllerTest {
 
         BDDMockito.when(movieServiceMock.findByName(ArgumentMatchers.anyString()))
                 .thenReturn(List.of(MovieCreator.createValidMovie()));
+
+        BDDMockito.when(movieServiceMock.save(ArgumentMatchers.any(MovieDTO.class)))
+                .thenReturn(MovieCreator.createValidMovie());
     }
 
     @Test
@@ -101,5 +106,14 @@ class MovieControllerTest {
 
         Assertions.assertNotNull(movies);
         Assertions.assertTrue(movies.isEmpty());
+    }
+
+    @Test
+    @DisplayName("save returns movie when successful")
+    void save_ReturnsMovie_WhenSuccessful(){
+        Movie movie = movieController.save(MovieDTOCreator.createMovieDTO()).getBody();
+
+        Assertions.assertNotNull(movie);
+        Assertions.assertEquals(movie, MovieCreator.createValidMovie());
     }
 }
