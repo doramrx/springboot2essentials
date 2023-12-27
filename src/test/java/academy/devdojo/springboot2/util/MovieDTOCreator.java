@@ -10,4 +10,11 @@ public class MovieDTOCreator {
                 .build();
     }
 
+    public static MovieDTO createValidUpdatedMovieDTO(){
+        return MovieDTO.builder()
+                .id(MovieCreator.createValidUpdatedMovie().getId())
+                .name(MovieCreator.createValidUpdatedMovie().getName())
+                .build();
+    }
+
 }

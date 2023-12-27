@@ -13,6 +13,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Collections;
@@ -44,6 +47,8 @@ class MovieControllerTest {
 
         BDDMockito.when(movieServiceMock.save(ArgumentMatchers.any(MovieDTO.class)))
                 .thenReturn(MovieCreator.createValidMovie());
+
+        BDDMockito.doNothing().when(movieServiceMock).replace(ArgumentMatchers.any(MovieDTO.class));
     }
 
     @Test
@@ -115,5 +120,14 @@ class MovieControllerTest {
 
         Assertions.assertNotNull(movie);
         Assertions.assertEquals(movie, MovieCreator.createValidMovie());
+    }
+
+    @Test
+    @DisplayName("replace updates movie when successful")
+    void replace_UpdatesMovie_WhenSuccessful(){
+        Assertions.assertDoesNotThrow(() -> movieController.replace(MovieDTOCreator.createValidUpdatedMovieDTO()).getBody());
+        ResponseEntity<Void> entity = movieController.replace(MovieDTOCreator.createValidUpdatedMovieDTO());
+        Assertions.assertNotNull(entity);
+        Assertions.assertEquals(HttpStatus.NO_CONTENT, entity.getStatusCode());
     }
 }
