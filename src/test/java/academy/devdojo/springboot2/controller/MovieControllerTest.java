@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.Collections;
 import java.util.List;
 
 @ExtendWith(SpringExtension.class)
@@ -35,6 +36,9 @@ class MovieControllerTest {
 
         BDDMockito.when(movieServiceMock.findByIdOrThrowBadRequestException(ArgumentMatchers.anyLong()))
                 .thenReturn(MovieCreator.createValidMovie());
+
+        BDDMockito.when(movieServiceMock.findByName(ArgumentMatchers.anyString()))
+                .thenReturn(List.of(MovieCreator.createValidMovie()));
     }
 
     @Test
@@ -74,4 +78,28 @@ class MovieControllerTest {
         Assertions.assertEquals(movie.getId(), expectedId);
     }
 
+    @Test
+    @DisplayName("findByName returns a list of movies when successful")
+    void findByName_ReturnsListOfMovies_WhenSuccessful(){
+        String expectedName = MovieCreator.createValidMovie().getName();
+
+        List<Movie> movies = movieController.findByName("movie").getBody();
+
+        Assertions.assertNotNull(movies);
+        Assertions.assertFalse(movies.isEmpty());
+        Assertions.assertEquals(movies.size(), 1);
+        Assertions.assertEquals(movies.get(0).getName(), expectedName);
+    }
+
+    @Test
+    @DisplayName("findByName returns an empty list of movies when movie is not found")
+    void findByName_ReturnsAnEmptyListOfMovies_WhenMovieIsNotFound(){
+        BDDMockito.when(movieServiceMock.findByName(ArgumentMatchers.anyString()))
+                .thenReturn(Collections.emptyList());
+
+        List<Movie> movies = movieController.findByName("movie").getBody();
+
+        Assertions.assertNotNull(movies);
+        Assertions.assertTrue(movies.isEmpty());
+    }
 }
