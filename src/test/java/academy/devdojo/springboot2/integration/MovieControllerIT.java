@@ -72,4 +72,16 @@ public class MovieControllerIT {
         Assertions.assertEquals(movies.size(), 1);
         Assertions.assertEquals(movies.get(0).getName(), expectedName);
     }
+
+    @Test
+    @DisplayName("findById returns movie when successful")
+    void findById_ReturnsMovie_WhenSuccessful(){
+        Movie savedMovie = movieRepository.save(MovieCreator.createMovieToBeSaved());
+        Long expectedId = savedMovie.getId();
+
+        Movie movie = testRestTemplate.getForObject("/movies/{id}", Movie.class, expectedId);
+
+        Assertions.assertNotNull(movie);
+        Assertions.assertEquals(movie.getId(), expectedId);
+    }
 }
