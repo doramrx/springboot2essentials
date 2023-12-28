@@ -1,6 +1,7 @@
 package academy.devdojo.springboot2.integration;
 
 import academy.devdojo.springboot2.domain.Movie;
+import academy.devdojo.springboot2.dto.MovieDTO;
 import academy.devdojo.springboot2.repository.MovieRepository;
 import academy.devdojo.springboot2.util.MovieCreator;
 import academy.devdojo.springboot2.util.MovieDTOCreator;
@@ -117,5 +118,21 @@ public class MovieControllerIT {
 
         Assertions.assertNotNull(movies);
         Assertions.assertTrue(movies.isEmpty());
+    }
+
+    @Test
+    @DisplayName("save returns movie when successful")
+    void save_ReturnsMovie_WhenSuccessful(){
+        MovieDTO movieDTO = MovieDTOCreator.createMovieDTO();
+
+        ResponseEntity<Movie> movie = testRestTemplate.postForEntity(
+                "/movies",
+                movieDTO,
+                Movie.class);
+
+        Assertions.assertNotNull(movie);
+        Assertions.assertNotNull(movie.getBody());
+        Assertions.assertNotNull(movie.getBody().getId());
+        Assertions.assertEquals(movie.getStatusCode(), HttpStatus.CREATED);
     }
 }
