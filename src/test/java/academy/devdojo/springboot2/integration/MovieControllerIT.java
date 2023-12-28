@@ -17,6 +17,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -134,5 +135,22 @@ public class MovieControllerIT {
         Assertions.assertNotNull(movie.getBody());
         Assertions.assertNotNull(movie.getBody().getId());
         Assertions.assertEquals(movie.getStatusCode(), HttpStatus.CREATED);
+    }
+
+    @Test
+    @DisplayName("replace updates movie when successful")
+    void replace_UpdatesMovie_WhenSuccessful(){
+        Movie savedMovie = movieRepository.save(MovieCreator.createMovieToBeSaved());
+
+        savedMovie.setName("new name");
+
+        ResponseEntity<Void> movie = testRestTemplate.exchange(
+                "/movies",
+                HttpMethod.PUT,
+                new HttpEntity<>(savedMovie),
+                Void.class);
+
+        Assertions.assertNotNull(movie);
+        Assertions.assertEquals(movie.getStatusCode(), HttpStatus.NO_CONTENT);
     }
 }
