@@ -104,4 +104,18 @@ public class MovieControllerIT {
         Assertions.assertEquals(movies.size(), 1);
         Assertions.assertEquals(movies.get(0).getName(), expectedName);
     }
+
+    @Test
+    @DisplayName("findByName returns an empty list of movies when movie is not found")
+    void findByName_ReturnsAnEmptyListOfMovies_WhenMovieIsNotFound(){
+        List<Movie> movies = testRestTemplate.exchange(
+                "/movies/find?name=test",
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<List<Movie>>() {
+                }).getBody();
+
+        Assertions.assertNotNull(movies);
+        Assertions.assertTrue(movies.isEmpty());
+    }
 }
