@@ -84,4 +84,24 @@ public class MovieControllerIT {
         Assertions.assertNotNull(movie);
         Assertions.assertEquals(movie.getId(), expectedId);
     }
+
+    @Test
+    @DisplayName("findByName returns a list of movies when successful")
+    void findByName_ReturnsListOfMovies_WhenSuccessful(){
+        Movie savedMovie = movieRepository.save(MovieCreator.createMovieToBeSaved());
+        String expectedName = savedMovie.getName();
+        String url = String.format("/movies/find?name=%s", expectedName);
+
+        List<Movie> movies = testRestTemplate.exchange(
+                url,
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<List<Movie>>() {
+                }).getBody();
+
+        Assertions.assertNotNull(movies);
+        Assertions.assertFalse(movies.isEmpty());
+        Assertions.assertEquals(movies.size(), 1);
+        Assertions.assertEquals(movies.get(0).getName(), expectedName);
+    }
 }
