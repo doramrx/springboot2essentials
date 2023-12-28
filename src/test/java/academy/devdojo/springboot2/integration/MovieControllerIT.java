@@ -3,10 +3,13 @@ package academy.devdojo.springboot2.integration;
 import academy.devdojo.springboot2.domain.Movie;
 import academy.devdojo.springboot2.repository.MovieRepository;
 import academy.devdojo.springboot2.util.MovieCreator;
+import academy.devdojo.springboot2.util.MovieDTOCreator;
 import academy.devdojo.springboot2.wrapper.PageableResponse;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
+import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -14,6 +17,11 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
+import java.util.Collections;
+import java.util.List;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureTestDatabase
@@ -44,5 +52,24 @@ public class MovieControllerIT {
         Assertions.assertFalse(moviePage.toList().isEmpty());
         Assertions.assertEquals(moviePage.toList().size(), 1);
         Assertions.assertEquals(moviePage.toList().get(0).getName(), expectedName);
+    }
+
+    @Test
+    @DisplayName("listAll returns list of movies when successful")
+    void listAll_ReturnsListOfMovies_WhenSuccessful(){
+        Movie savedMovie = movieRepository.save(MovieCreator.createMovieToBeSaved());
+        String expectedName = savedMovie.getName();
+
+        List<Movie> movies = testRestTemplate.exchange(
+                "/movies/all",
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<List<Movie>>() {
+                }).getBody();
+
+        Assertions.assertNotNull(movies);
+        Assertions.assertFalse(movies.isEmpty());
+        Assertions.assertEquals(movies.size(), 1);
+        Assertions.assertEquals(movies.get(0).getName(), expectedName);
     }
 }
