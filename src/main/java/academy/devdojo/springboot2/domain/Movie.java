@@ -1,5 +1,6 @@
 package academy.devdojo.springboot2.domain;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -20,5 +21,6 @@ public class Movie {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @NotEmpty(message = "The movie name cannot be empty")
+    @Schema(description = "This is the Movie's name", example = "Butterfly effect")
     private String name;
 }
