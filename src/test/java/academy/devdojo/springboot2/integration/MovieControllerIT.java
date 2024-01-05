@@ -9,8 +9,6 @@ import academy.devdojo.springboot2.wrapper.PageableResponse;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
-import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,12 +19,13 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.annotation.DirtiesContext;
 
-import java.util.Collections;
 import java.util.List;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureTestDatabase
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class MovieControllerIT {
 
     @Autowired
@@ -135,6 +134,22 @@ public class MovieControllerIT {
         Assertions.assertNotNull(movie.getBody());
         Assertions.assertNotNull(movie.getBody().getId());
         Assertions.assertEquals(movie.getStatusCode(), HttpStatus.CREATED);
+    }
+
+    @Test
+    @DisplayName("delete removes movie when successful")
+    void delete_RemovesMovie_WhenSuccessful(){
+        Movie savedMovie = movieRepository.save(MovieCreator.createMovieToBeSaved());
+
+        ResponseEntity<Void> movie = testRestTemplate.exchange(
+                "/movies/{id}",
+                HttpMethod.DELETE,
+                null,
+                Void.class,
+                savedMovie.getId());
+
+        Assertions.assertNotNull(movie);
+        Assertions.assertEquals(movie.getStatusCode(), HttpStatus.NO_CONTENT);
     }
 
     @Test
